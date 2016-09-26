@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>This is Assignment-1</title>
+		<style>
+			#Title {
+				background-color: black;
+    			color: white;
+			}
+			.Temp1 {
+				font-size: larger;
+    			font-weight: bold;
+    			padding-bottom: 10px;
+			}
+			.Temp2{
+				border-bottom: 1px solid gray;
+    			padding-bottom: 5px;
+			}
+			ul {
+				padding-left: 0;
+			}
+			li {
+				list-style: none;
+			}
+		</style>
+	</head>
+	<body>
+		<h1 id="Title">Assignment-2</h1>
+		
+		<ul id="log">
+		</ul>
+	</body>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script>
+		var countries;
+		var log = d3.select("#log");
+		d3.json("https://raw.githubusercontent.com/CristianFelix/infoviz/master/gapminder.json", function(error, data){
+			if(error){
+				window.alert("Data Invalid");
+			}
+			else{
+				countries = data;
+				render();
+			}
+		});
+
+		function render(){
+			log.selectAll("li")
+				.data(countries)
+				.enter()
+				.append("li")
+				.text(country => country.name)
+		}
+	</script>
+</html>
