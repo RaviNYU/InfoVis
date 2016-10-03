@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>This is Assignment-1</title>
+		<style>
+			#Title {
+				background-color: black;
+    			color: white;
+			}
+			.Temp1 {
+				font-size: larger;
+    			font-weight: bold;
+    			padding-bottom: 10px;
+			}
+			.Temp2{
+				border-bottom: 1px solid gray;
+    			padding-bottom: 5px;
+			}
+			ul {
+				padding-left: 0;
+			}
+			li {
+				list-style: none;
+			}
+		</style>
+	</head>
+	<body>
+		<h1 id="Title">Assignment-1</h1>
+		<div>
+			<div class="Temp1">Countries </div>
+			<div class="Temp2">
+				<label>Name</label>
+				<input type="text" id="textInput">
+				<button onclick="logName();">Add</button>
+		    </div>
+		</div>
+		<ul id="log">
+		</ul>
+	</body>
+	<script>
+		function logName(newName) {
+			if(!newName) {
+				newName = document.getElementById("textInput").value;
+			}
+			if(newName) {
+				var log = document.getElementById("log");
+				var newEntry = document.createElement("li");
+				newEntry.innerHTML = newName;
+				log.appendChild(newEntry);
+			}
+		}
+
+	</script>
+</html>
