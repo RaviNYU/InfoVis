@@ -1,0 +1,132 @@
+<html>
+	<head>
+		<title>This is Assignment-4</title>
+		<style>
+			body {
+                font-family: initial;
+            }
+            h1 { 
+                background-color: black;
+                color: white;
+            }
+            .inputForm {
+                padding-bottom: 5px;
+                border-bottom: 1px solid #eee;                
+            }
+            ul#countries {
+                list-style: none;
+                margin: 0px;                
+                padding: 0px !important;
+                float: left;
+            }
+            ul#countries li {
+                padding: 5px;
+            }
+            svg {
+                overflow: initial;
+            }
+            .domain {
+                fill: none;
+                stroke: #000;
+            }
+            .tick {
+                font-size: 12;
+            }
+            .tick line {
+                stroke: #ccc;
+            }
+		</style>
+	</head>
+	<body>
+		<div>
+            <h1 id="title">Assignment-4</h1>
+        </div>
+        <div class="inputForm">
+            <h2>Countries</h2>
+        </div>
+        <ul id="countries">
+        </ul>
+        <svg>
+            <g id="dotGroup"></g>
+        </svg>
+	</body>
+
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script>
+		var data_file = 'https://raw.githubusercontent.com/CristianFelix/infoviz/master/Week%203/newData.json'
+        var legend = d3.select("#countries")
+        var chart = d3.select('svg')
+        var dots = d3.select("#dotGroup");
+
+        var width = 600,
+            height = 400,
+            margin = {top: 10, bottom: 10, left: 10, right: 10},
+            innerWidth = width - margin.left - margin.right,
+            innerHeight = height - margin.top - margin.bottom;
+        
+        var vizYear = '2008'
+        d3.json(data_file, function(err, data) {
+            if (err) 
+            	window.alert('Data Invalid')
+            render(data)
+        })
+
+        //Function -
+        function render(data) {
+            var countries = data.filter(d => d.income[vizYear] && d.lifeExpectancy[vizYear] && d.population[vizYear]) //only 2008
+            renderList(countries);
+            renderChart(countries);
+        }
+
+        function renderList(countries) {
+            legend.selectAll("li")
+                .data(countries)
+                .enter()
+                .append('li')
+                .text(country => country.name) // country data accessible 
+        }
+
+        function renderChart(countries) {
+            chart.attr('width', width).attr('height', height)
+            //Moving all dots together..
+            dots.attr("transform","translate(" + margin.left + "," + margin.top + ")")
+
+            var xScale = d3.scale.linear().range([0, innerWidth]),
+                yScale = d3.scale.linear().range([innerHeight, 0]), //inverted
+                populationScale = d3.scale.linear().range([20,1000]),
+                colorScale = d3.scale.category10();
+
+            xScale.domain([-1000, d3.max(countries, c => c.income[vizYear])]);
+            yScale.domain(d3.extent(countries, c => c.lifeExpectancy[vizYear]));
+            populationScale.domain(d3.extent(countries, c => c.population[vizYear]));
+
+            var xAxisGroup = chart.append('g')
+                .attr("transform","translate(" + margin.left + "," + (innerHeight + margin.top) + ")")
+            var yAxisGroup = chart.append('g')
+                .attr("transform","translate(" + margin.left + "," + (margin.bottom) + ")")
+            var xAxis = d3.svg.axis()
+                .tickSize(-380)
+                .scale(xScale)
+                .orient('bottom');
+
+            var yAxis = d3.svg.axis()
+                .tickSize(-innerWidth)
+                .scale(yScale)
+                .orient('left');
+
+            xAxisGroup.call(xAxis);
+            yAxisGroup.call(yAxis);
+
+            //Render Scatter Plot
+            dots.selectAll("circle")
+                .data(countries)
+                .enter()
+                .append("circle")
+                .attr("r", (d, i) => Math.sqrt(populationScale(d.population[vizYear]) / Math.PI)) //Area radius conversion
+                .attr("cx", (d, i) => xScale(d.income[vizYear]))
+                .attr("cy", (d, i) => yScale(d.lifeExpectancy[vizYear]))
+                .attr("fill", (d, i) => colorScale(d.region))
+                .attr("opacity", 0.7)
+        }
+	</script>
+</html>
